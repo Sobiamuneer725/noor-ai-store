@@ -44,7 +44,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="relative z-10 max-w-2xl space-y-6">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-xs font-semibold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Step 6: Live Gemini AI Concierge Active</span>
+            <span>Live AI Shopping Assistant</span>
           </div>
 
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
@@ -52,7 +52,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </h1>
 
           <p className="text-neutral-300 text-base md:text-lg leading-relaxed">
-            Your exported Google Stitch UI layout is fully integrated with Firebase Studio and Google Gemini 3 Flash! Shop next-generation AI hardware or consult our live Neural Advisor.
+            Discover next-generation AI-powered shopping — get instant product recommendations, AI-written marketing content, and a live AI concierge to help you find exactly what you need.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">

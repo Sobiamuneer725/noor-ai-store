@@ -37,7 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 Noor AI Store
               </span>
               <span className="hidden sm:inline-block ml-2 text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/15 via-purple-500/15 to-pink-500/15 text-indigo-800 border border-indigo-400/30 flex-inline items-center gap-1 shadow-2xs">
-                🏆 Step 6 Complete: AI Neural Concierge & Catalog Live!
+                🏆 AI Neural Concierge & Catalog Live!
               </span>
             </div>
           </div>

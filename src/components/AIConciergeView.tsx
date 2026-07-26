@@ -128,7 +128,7 @@ export const AIConciergeView: React.FC<AIConciergeViewProps> = ({
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-bold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
-            <span>Step 6 Complete • Live Neural Advisor</span>
+            <span>Live Neural Advisor</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
             <span>Noor AI Shopping Concierge</span>

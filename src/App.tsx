@@ -243,14 +243,14 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className="bg-white border-t border-neutral-200 mt-auto py-8 text-center text-xs text-neutral-500 space-y-2">
-        <p className="font-semibold text-neutral-700">
-          Noor AI Store • Built with Google Stitch UI & Firebase Studio
-        </p>
-        <p className="text-indigo-600 font-semibold">
-          🎉 All 6 Mentorship Steps Complete: UI Scaffold, Firebase Auth, Firestore Database, Real-time Checkout, Gemini AI Writer, Community Reviews Engine, and Live Neural Concierge!
-        </p>
-      </footer>
+<footer className="bg-white border-t border-neutral-200 mt-auto py-8 text-center text-xs text-neutral-500 space-y-2">
+  <p className="font-semibold text-neutral-700">
+    Noor AI Store © 2026 — Powered by Google Gemini AI
+  </p>
+  <p className="text-indigo-600 font-semibold">
+    🛍️ AI-Powered Shopping Assistant, Smart Marketing Writer & Live Product Catalog
+  </p>
+</footer>
     </div>
   );
 }

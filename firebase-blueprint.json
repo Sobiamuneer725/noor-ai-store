@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Noor AI Store Blueprint",
+  "description": "Firestore schema for Noor AI Store e-commerce application",
+  "collections": {
+    "products": {
+      "description": "Catalog of AI hardware and software products",
+      "fields": {
+        "id": { "type": "string", "description": "Unique product ID" },
+        "name": { "type": "string", "description": "Product display name" },
+        "tagline": { "type": "string", "description": "Short marketing tagline" },
+        "price": { "type": "number", "description": "Price in USD" },
+        "category": { "type": "string", "description": "Product category" },
+        "rating": { "type": "number", "description": "Average user rating" },
+        "reviewsCount": { "type": "number", "description": "Number of reviews" },
+        "image": { "type": "string", "description": "Product image URL" },
+        "description": { "type": "string", "description": "Full product description" },
+        "features": { "type": "array", "items": { "type": "string" }, "description": "List of key features" },
+        "inStock": { "type": "boolean", "description": "Whether item is in stock" }
+      }
+    },
+    "users": {
+      "description": "User profiles and wishlist state",
+      "fields": {
+        "uid": { "type": "string", "description": "Firebase Auth user ID" },
+        "email": { "type": "string", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "createdAt": { "type": "string", "description": "Account creation timestamp" },
+        "wishlistIds": { "type": "array", "items": { "type": "string" }, "description": "Array of product IDs in wishlist" }
+      }
+    },
+    "orders": {
+      "description": "User checkout order transactions",
+      "fields": {
+        "orderId": { "type": "string", "description": "Unique order ID" },
+        "userId": { "type": "string", "description": "User ID who placed order" },
+        "items": { "type": "array", "description": "List of cart items purchased" },
+        "total": { "type": "number", "description": "Total order amount" },
+        "status": { "type": "string", "description": "Order status e.g. Delivered, Processing" },
+        "createdAt": { "type": "string", "description": "Order creation timestamp" },
+        "shippingAddress": { "type": "object", "description": "Shipping address details" }
+      }
+    }
+  }
+}

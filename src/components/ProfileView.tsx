@@ -43,7 +43,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-neutral-900">Please Sign In</h2>
           <p className="text-neutral-500 text-sm">
-            Sign in to manage your Noor AI Store account, order history, and saved wishlists.
+            Sign in to manage your Noor ul Haya account, order history, and saved wishlists.
           </p>
         </div>
         <button

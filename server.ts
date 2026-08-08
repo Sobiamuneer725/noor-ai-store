@@ -38,7 +38,7 @@ async function startServer() {
       }
 
       const client = getAiClient();
-      const prompt = `You are an expert AI marketing copywriter for 'Noor AI Store', a futuristic e-commerce store specializing in next-generation AI hardware and intelligent lifestyle pods.
+      const prompt = `You are an expert AI marketing copywriter for 'Noor ul Haya', a futuristic e-commerce store specializing in next-generation AI hardware and intelligent lifestyle pods.
       
 Write high-converting marketing copy with the following parameters:
 - Product Target: ${product}
@@ -75,7 +75,7 @@ Requirements:
 
       const client = getAiClient();
       const reviewsText = reviews.map((r: any) => `- ${r.userName} (${r.rating} stars): "${r.comment}"`).join("\n");
-      const prompt = `You are the AI Quality & Customer Intelligence Analyst at Noor AI Store.
+      const prompt = `You are the AI Quality & Customer Intelligence Analyst at Noor ul Haya.
 Analyze the following customer reviews for "${productName}" and generate a concise, highly scannable bulleted summary.
 
 Customer Reviews:
@@ -110,7 +110,7 @@ Requirements:
         `ID: ${p.id} | Name: "${p.name}" | Price: $${p.price} | Category: ${p.category} | Tagline: ${p.tagline} | InStock: ${p.inStock}`
       ).join("\n");
 
-      const prompt = `You are Noor, the futuristic AI Shopping Concierge & Neural Hardware Advisor for Noor AI Store.
+      const prompt = `You are Noor, the futuristic AI Shopping Concierge & Neural Hardware Advisor for Noor ul Haya.
 You assist customers in selecting the right AI hardware rigs, smart neural pods, and intelligent software interfaces from our catalog.
 
 Here is our live store catalog:

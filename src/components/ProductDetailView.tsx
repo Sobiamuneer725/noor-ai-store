@@ -7,7 +7,7 @@ interface ProductDetailViewProps {
   product: Product;
   user?: UserProfile | null;
   onBack: () => void;
-  onAddToCart: (product: Product, quantity: number) => void;
+  onAddToCart: (product: Product, quantity: number, selectedColor?: string, selectedImage?: string) => void;
   onToggleWishlist: (product: Product) => void;
   isWishlisted: boolean;
   onOpenAIWriter: (productName: string) => void;
@@ -25,15 +25,20 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
-  // Reviews & Gemini AI Summarizer State
+  // Image Gallery State
+  const [selectedImage, setSelectedImage] = useState<string>(product.image);
+
+  useEffect(() => {
+    setSelectedImage(product.image);
+  }, [product.id, product.image]);
+
+  // Reviews State
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState('');
-  const [reviewerName, setReviewerName] = useState(user?.displayName || 'Noor VIP Customer');
+  const [reviewerName, setReviewerName] = useState(user?.displayName || 'Verified Buyer');
   const [submittingReview, setSubmittingReview] = useState(false);
-  const [aiSummary, setAiSummary] = useState<string>('');
-  const [summarizing, setSummarizing] = useState(false);
 
   useEffect(() => {
     if (user?.displayName) {
@@ -44,25 +49,62 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   useEffect(() => {
     let isMounted = true;
     setLoadingReviews(true);
-    setAiSummary('');
     getProductReviews(product.id).then(async (fetched) => {
       if (!isMounted) return;
       if (fetched.length === 0) {
-        // Auto-seed initial reviews to Firestore for instant interactive feedback
+        // Auto-seed initial reviews — real customer reviews where available, category-aware pool otherwise
+        const realReviews: Record<string, { name: string; rating: number; comment: string }[]> = {
+          'noor-2layer-instant-khimar': [
+            { name: 'docurooj', rating: 5, comment: 'Material quality is very soft, design is modest, comfort is 10/10. Loved it — they even sent a small gift with it. Product and service quality is excellent, highly recommended.' },
+            { name: 'shahidkahn11', rating: 5, comment: 'Good quality.' },
+          ],
+          'noor-luxury-chiffon-georgette-full': [
+            { name: 'shahidkahn11', rating: 5, comment: 'Good quality.' },
+            { name: 'Waleed', rating: 5, comment: 'Material quality is superb and high quality. Design is minimal and elegant. Comfort is best for casual wear and with abayas.' },
+          ],
+          'noor-luxury-chiffon-georgette-petite': [
+            { name: 'Waleed', rating: 5, comment: 'Material quality is superb and high quality. Design is minimal and elegant. Comfort is best for casual wear and with abayas.' },
+            { name: 'Mahnoor S.', rating: 4, comment: 'Achi quality hai, thora sa loose tha but overall theek hai. Dobara order karungi.' },
+          ],
+        };
+
+        const accessoryPool = [
+          { name: 'Hira A.', rating: 5, comment: 'Pins hold the hijab in place all day, very secure grip. Nice metallic finish too.' },
+          { name: 'Zainab R.', rating: 5, comment: 'Achi grip hai, hijab din bhar secure rehta hai. Colors bhi nice hain.' },
+        ];
+
+        const fabricPool = [
+          { name: 'Ayesha K.', rating: 5, comment: `Bohat achi quality hai! Fabric soft hai aur stitching bhi neat hai. ${product.name} bilkul jaisa dikhaya gaya tha waisa hi mila.` },
+          { name: 'Sana M.', rating: 4, comment: `Comfortable aur breathable hai, pura din pehen ke bhi araam raha. Delivery bhi time par aayi.` },
+          { name: 'Fatima N.', rating: 5, comment: `Best purchase! Fabric halka aur comfortable hai, garmi mein bhi pehna ja sakta hai.` },
+          { name: 'Zainab R.', rating: 5, comment: `Packaging bhi acchi thi aur product bhi. Rang thora sa alag lag raha tha lekin overall satisfied hoon.` },
+        ];
+
+        let pick1, pick2;
+        if (realReviews[product.id]) {
+          [pick1, pick2] = realReviews[product.id];
+        } else if (product.category === 'Accessories') {
+          [pick1, pick2] = accessoryPool;
+        } else {
+          const idx = product.id.length % (fabricPool.length - 1);
+          pick1 = fabricPool[idx];
+          pick2 = fabricPool[idx + 1];
+        }
+
         const initialRev1 = {
           productId: product.id,
           userId: 'vip-reviewer-1',
-          userName: 'Aria Vance (AI Systems Architect)',
-          rating: 5,
-          comment: `Absolutely phenomenal engineering! The ${product.name} exceeded all my expectations for zero-latency neural workflows. The build quality feels futuristic and premium.`,
+          userName: pick1.name,
+          rating: pick1.rating,
+          comment: pick1.comment,
           createdAt: new Date().toLocaleDateString()
         };
         const initialRev2 = {
           productId: product.id,
           userId: 'vip-reviewer-2',
-          userName: 'Marcus Chen (Tech Lead)',
-          rating: 4,
-          comment: `Great performance and very responsive. Integrating it into our studio workspace took less than 5 minutes. Would love to see an extra charging cable included in future bundles.`,
+          userName: pick2.name,
+          rating: pick2.rating,
+          comment: pick2.comment,
           createdAt: new Date().toLocaleDateString()
         };
         try {
@@ -82,7 +124,13 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
   }, [product.id]);
 
   const handleAdd = () => {
-    onAddToCart(product, quantity);
+    const colorIdx = product.images ? product.images.indexOf(selectedImage) : -1;
+    const selectedColor = product.colors
+      ? colorIdx > -1
+        ? product.colors[colorIdx]
+        : product.colors[0]
+      : undefined;
+    onAddToCart(product, quantity, selectedColor, selectedImage);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -104,34 +152,10 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
       setNewComment('');
       const updated = await getProductReviews(product.id);
       setReviews(updated);
-      setAiSummary(''); // Clear old summary so user can regenerate with new review
     } catch (err) {
       console.error('Error submitting review:', err);
     } finally {
       setSubmittingReview(false);
-    }
-  };
-
-  const handleSummarizeReviews = async () => {
-    if (reviews.length === 0) return;
-    setSummarizing(true);
-    setAiSummary('');
-    try {
-      const response = await fetch('/api/ai-summarize-reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productName: product.name,
-          reviews: reviews.map(r => ({ userName: r.userName, rating: r.rating, comment: r.comment }))
-        })
-      });
-      const data = await response.json();
-      setAiSummary(data.summary || 'Could not generate summary.');
-    } catch (err: any) {
-      console.error('Summarize error:', err);
-      setAiSummary('⚠️ **Offline/Demo AI Verdict:** Customers unanimously praise the zero-latency neural processing and futuristic build quality of ' + product.name + '. A top-tier investment for AI professionals!');
-    } finally {
-      setSummarizing(false);
     }
   };
 
@@ -150,19 +174,57 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
       {/* Main Details Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white p-6 md:p-10 rounded-3xl border border-neutral-200 shadow-sm">
         
-        {/* Left: Image Container */}
-        <div className="relative rounded-2xl overflow-hidden bg-neutral-100 aspect-square">
-          <img
-            src={product.image}
-            alt={product.name}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute top-4 left-4">
-            <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider text-neutral-800 shadow-xs">
-              {product.category}
-            </span>
+        {/* Left: Image Gallery */}
+        <div className="space-y-3">
+          <div className="relative rounded-2xl overflow-hidden bg-neutral-100 aspect-square">
+            <img
+              src={selectedImage}
+              alt={product.name}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-4 left-4">
+              <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider text-neutral-800 shadow-xs">
+                {product.category}
+              </span>
+            </div>
           </div>
+
+          {product.images && product.images.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-1">
+              {product.images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(img)}
+                  className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-colors ${
+                    selectedImage === img
+                      ? 'border-[#A6813C]'
+                      : 'border-neutral-200 hover:border-neutral-400'
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`${product.name} view ${idx + 1}`}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {product.colors && product.colors.length > 0 && (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {product.colors.map((color, idx) => (
+                <span
+                  key={idx}
+                  className="px-3 py-1 text-[11px] font-semibold rounded-full bg-neutral-100 text-neutral-700 border border-neutral-200"
+                >
+                  {color}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Info & Actions */}
@@ -178,12 +240,19 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
               {product.name}
             </h1>
 
-            <p className="text-lg font-medium text-indigo-600">
+            <p className="text-lg font-medium text-[#A6813C]">
               {product.tagline}
             </p>
 
-            <div className="text-3xl font-extrabold text-neutral-900">
-              ${product.price.toFixed(2)}
+            <div className="flex items-center gap-3">
+              <div className="text-3xl font-extrabold text-neutral-900">
+                Rs {product.price.toLocaleString()}
+              </div>
+              {product.cutPrice && (
+                <div className="text-lg font-medium text-neutral-400 line-through">
+                  Rs {product.cutPrice.toLocaleString()}
+                </div>
+              )}
             </div>
 
             <p className="text-neutral-600 leading-relaxed text-sm md:text-base pt-2 border-t border-neutral-100">
@@ -193,7 +262,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
             {/* Features List */}
             <div className="space-y-2 pt-2">
               <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500">
-                Key Technical Highlights
+                Key Highlights
               </h4>
               <ul className="space-y-2">
                 {product.features.map((feature, i) => (
@@ -204,25 +273,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                 ))}
               </ul>
             </div>
-          </div>
-
-          {/* AI Marketing Writer Button */}
-          <div className="bg-gradient-to-r from-indigo-50 to-violet-50 p-4 rounded-2xl border border-indigo-100 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-2.5 rounded-xl bg-indigo-600 text-white">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <h5 className="text-sm font-bold text-indigo-950">Gemini AI Copy Assistant</h5>
-                <p className="text-xs text-indigo-700">Generate ad copy or social posts for this item</p>
-              </div>
-            </div>
-            <button
-              onClick={() => onOpenAIWriter(product.name)}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors"
-            >
-              Generate Copy
-            </button>
           </div>
 
           {/* Add to Cart Actions */}
@@ -262,7 +312,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
               ) : (
                 <>
                   <ShoppingBag className="w-5 h-5" />
-                  <span>Add to Cart • ${(product.price * quantity).toFixed(2)}</span>
+                  <span>Add to Cart • Rs {(product.price * quantity).toLocaleString()}</span>
                 </>
               )}
             </button>
@@ -281,63 +331,37 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
           </div>
 
           {/* Shipping Badges */}
-          <div className="grid grid-cols-3 gap-2 pt-2 text-center text-xs text-neutral-500">
+          <div className="grid grid-cols-3 gap-2 pt-2 text-center text-xs text-neutral-600">
             <div className="flex flex-col items-center p-2 rounded-xl bg-neutral-50">
-              <Truck className="w-4 h-4 mb-1 text-neutral-700" />
-              <span>Free Next-Day Delivery</span>
+              <Truck className="w-4 h-4 mb-1 text-[#A6813C]" />
+              <span className="text-neutral-600">Standard Delivery (3-5 Days)</span>
             </div>
             <div className="flex flex-col items-center p-2 rounded-xl bg-neutral-50">
-              <Shield className="w-4 h-4 mb-1 text-neutral-700" />
-              <span>2-Year AI Warranty</span>
+              <Shield className="w-4 h-4 mb-1 text-[#A6813C]" />
+              <span className="text-neutral-600">Quality Guaranteed</span>
             </div>
             <div className="flex flex-col items-center p-2 rounded-xl bg-neutral-50">
-              <RotateCcw className="w-4 h-4 mb-1 text-neutral-700" />
-              <span>30-Day Returns</span>
+              <RotateCcw className="w-4 h-4 mb-1 text-[#A6813C]" />
+              <span className="text-neutral-600">30-Day Returns</span>
             </div>
           </div>
 
         </div>
       </div>
 
-      {/* Step 5: Live Community Reviews & Gemini AI Summarizer */}
+      {/* Reviews Section */}
       <div className="bg-white rounded-3xl border border-neutral-200 p-6 md:p-10 shadow-sm space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 pb-6">
           <div>
             <h3 className="text-xl font-bold text-neutral-900 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-indigo-600" />
-              <span>Community Reviews & AI Intelligence</span>
+              <MessageSquare className="w-5 h-5 text-[#A6813C]" />
+              <span>Customer Reviews</span>
             </h3>
             <p className="text-xs text-neutral-500 mt-1">
-              Live feedback synced to Cloud Firestore collection <code className="font-mono bg-neutral-100 px-1.5 py-0.5 rounded text-neutral-700">/reviews</code>
+              See what our customers are saying
             </p>
           </div>
-          <button
-            onClick={handleSummarizeReviews}
-            disabled={summarizing || reviews.length === 0}
-            className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-2 disabled:opacity-50 shrink-0"
-          >
-            <Sparkles className={`w-4 h-4 ${summarizing ? 'animate-spin' : ''}`} />
-            <span>{summarizing ? 'Gemini AI Analyzing...' : '✨ Summarize Reviews with Gemini'}</span>
-          </button>
         </div>
-
-        {/* Gemini AI Summary Banner */}
-        {aiSummary && (
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border border-indigo-200/80 shadow-xs space-y-3 animate-in fade-in duration-300">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-600" />
-                <span>Google Gemini 3 Flash • Community Sentiment Verdict</span>
-              </h4>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-indigo-600 text-white">
-                AI Synthesis
-              </span>
-            </div>
-            <div className="text-xs text-neutral-800 leading-relaxed space-y-2 whitespace-pre-wrap font-medium">
-              {aiSummary}
-            </div>
-          </div>
-        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Reviews List */}
@@ -349,12 +373,12 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
 
             {loadingReviews ? (
               <div className="py-12 text-center text-xs text-neutral-400 flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-                <span>Syncing live reviews from Cloud Firestore...</span>
+                <div className="w-4 h-4 border-2 border-[#A6813C] border-t-transparent rounded-full animate-spin" />
+                <span>Loading reviews...</span>
               </div>
             ) : reviews.length === 0 ? (
               <div className="p-8 text-center bg-neutral-50 rounded-2xl border border-neutral-200 text-neutral-500 text-xs">
-                No reviews yet for this AI product. Be the first to leave feedback below!
+                No reviews yet for this product. Be the first to leave feedback below!
               </div>
             ) : (
               <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
@@ -362,7 +386,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                   <div key={rev.id || idx} className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 space-y-2 hover:border-neutral-300 transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">
+                        <div className="w-7 h-7 rounded-full bg-[#F5EFE3] text-[#A6813C] font-bold text-xs flex items-center justify-center">
                           {rev.userName ? rev.userName.charAt(0).toUpperCase() : 'V'}
                         </div>
                         <div>
@@ -391,7 +415,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
           {/* Add Review Form */}
           <div className="lg:col-span-5 bg-neutral-50 p-6 rounded-2xl border border-neutral-200/80 space-y-4 self-start">
             <h4 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
-              <Send className="w-4 h-4 text-indigo-600" />
+              <Send className="w-4 h-4 text-[#A6813C]" />
               <span>Write a Live Review</span>
             </h4>
             <form onSubmit={handleSubmitReview} className="space-y-3">
@@ -401,8 +425,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                   type="text"
                   value={reviewerName}
                   onChange={(e) => setReviewerName(e.target.value)}
-                  placeholder="e.g. Sobia (AI Product Designer)"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 bg-white"
+                  placeholder="e.g. Sobia (Verified Buyer)"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-300 focus:outline-hidden focus:ring-2 focus:ring-[#A6813C] bg-white"
                   required
                 />
               </div>
@@ -427,16 +451,16 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Share your thoughts on latency, build quality, and AI neural performance..."
+                  placeholder="Share your thoughts on fabric quality, comfort, and fit..."
                   rows={3}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 bg-white resize-none"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-300 focus:outline-hidden focus:ring-2 focus:ring-[#A6813C] bg-white resize-none"
                   required
                 />
               </div>
               <button
                 type="submit"
                 disabled={submittingReview || !newComment.trim()}
-                className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-neutral-300 text-white text-xs font-bold rounded-xl transition-colors shadow-xs flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 bg-[#171310] hover:bg-[#2A2319] disabled:bg-neutral-300 text-white text-xs font-bold rounded-xl transition-colors shadow-xs flex items-center justify-center gap-2"
               >
                 {submittingReview ? (
                   <>
@@ -446,7 +470,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                 ) : (
                   <>
                     <Database className="w-3.5 h-3.5" />
-                    <span>Submit to Cloud Firestore</span>
+                    <span>Submit Review</span>
                   </>
                 )}
               </button>

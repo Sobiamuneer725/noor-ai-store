@@ -1,11 +1,11 @@
 markdown
-# 🛍️ Noor AI Store
+# 🛍️ Noor ul Haya
 
 ## 📌 The Problem
 
 Small online sellers often lack the time, budget, or writing skills to create professional marketing content — product descriptions, ad copy, and social media posts — for their stores. At the same time, customers browsing online stores often feel overwhelmed by choices and don't get instant, personalized guidance on what to buy.
 
-**Noor AI Store** solves both problems in one platform: it gives sellers an AI copywriter to generate high-converting marketing content in seconds, and gives customers a live AI shopping concierge that recommends products based on their actual needs — using the store's real catalog data.
+**Noor ul Haya** solves both problems in one platform: it gives sellers an AI copywriter to generate high-converting marketing content in seconds, and gives customers a live AI shopping concierge that recommends products based on their actual needs — using the store's real catalog data.
 
 **Built for:** small online sellers/shopkeepers who need marketing help, and shoppers who want personalized product guidance.
 
@@ -25,7 +25,7 @@ Small online sellers often lack the time, budget, or writing skills to create pr
 
 ## 🤖 AI Feature — How It Works
 
-Noor AI Store uses **Google Gemini 3 Flash** for three distinct AI-powered features, each with its own custom instructions:
+Noor ul Haya uses **Google Gemini 3 Flash** for three distinct AI-powered features, each with its own custom instructions:
 
 ### 1. AI Shopping Concierge
 
@@ -46,7 +46,7 @@ This prompt is dynamically injected with the **live product catalog** pulled fro
 
 ### 2. AI Marketing Writer
 
-You are an expert AI marketing copywriter for 'Noor AI Store'.
+You are an expert AI marketing copywriter for 'Noor ul Haya'.
 
 Write high-converting marketing copy with the following parameters:
 
@@ -62,7 +62,7 @@ Do NOT include any meta-commentary or introductory conversational text.
 
 ### 3. AI Review Summarizer
 
-You are the AI Quality & Customer Intelligence Analyst at Noor AI Store.
+You are the AI Quality & Customer Intelligence Analyst at Noor ul Haya.
 
 Analyze the following customer reviews for "${productName}" and generate
 a concise, high-signal summary.

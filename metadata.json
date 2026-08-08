@@ -1,5 +1,5 @@
 {
-  "name": "Noor AI Store",
+  "name": "Noor ul Haya",
   "description": "AI-powered e-commerce store with Gemini AI Writer, product catalog, cart, checkout, and user profiles.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

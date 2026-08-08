@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Noor AI Store Blueprint",
-  "description": "Firestore schema for Noor AI Store e-commerce application",
+  "title": "Noor ul Haya Blueprint",
+  "description": "Firestore schema for Noor ul Haya e-commerce application",
   "collections": {
     "products": {
       "description": "Catalog of AI hardware and software products",

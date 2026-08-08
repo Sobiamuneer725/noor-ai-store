@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag, Heart, Sparkles, User, LogIn, Store, ShieldCheck, Bot } from 'lucide-react';
+import { ShoppingCart, Heart, User, LogIn, Search } from 'lucide-react';
 import { ViewState, UserProfile } from '../types';
 
 interface NavbarProps {
@@ -19,27 +19,33 @@ export const Navbar: React.FC<NavbarProps> = ({
   user,
   onOpenAuth,
 }) => {
+  const goToCatalogSearch = () => {
+    onNavigate('home');
+    setTimeout(() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' }), 100);
+  };
+
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-neutral-200 shadow-xs">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E7DFCF] shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          
+
           {/* Logo & Brand */}
-          <div 
+          <div
             onClick={() => onNavigate('home')}
             className="flex items-center space-x-2.5 cursor-pointer group"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-              <Store className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-neutral-900 via-indigo-950 to-neutral-800 bg-clip-text text-transparent">
-                Noor AI Store
-              </span>
-              <span className="hidden sm:inline-block ml-2 text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/15 via-purple-500/15 to-pink-500/15 text-indigo-800 border border-indigo-400/30 flex-inline items-center gap-1 shadow-2xs">
-                🏆 AI Neural Concierge & Catalog Live!
-              </span>
-            </div>
+            <img
+              src="/assets/logo.webp"
+              alt="Noor ul Haya"
+              referrerPolicy="no-referrer"
+              className="w-10 h-10 rounded-full object-cover group-hover:scale-105 transition-transform"
+            />
+            <span
+              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-xl font-semibold tracking-tight text-[#171310]"
+            >
+              Noor ul Haya
+            </span>
           </div>
 
           {/* Center Navigation Links */}
@@ -48,46 +54,26 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => onNavigate('home')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 currentView === 'home'
-                  ? 'bg-neutral-100 text-neutral-900'
-                  : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
+                  ? 'bg-[#F5EFE3] text-[#171310]'
+                  : 'text-neutral-600 hover:text-[#171310] hover:bg-neutral-50'
               }`}
             >
-              Catalog
+              Home
             </button>
-
             <button
-              onClick={() => onNavigate('ai-concierge')}
-              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
-                currentView === 'ai-concierge'
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-2xs font-semibold'
-                  : 'text-neutral-600 hover:text-indigo-600 hover:bg-indigo-50/60'
-              }`}
+              onClick={() => { onNavigate('home'); setTimeout(() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' }), 100); }}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:text-[#171310] hover:bg-neutral-50 transition-colors"
             >
-              <Bot className={`w-4 h-4 ${currentView === 'ai-concierge' ? 'animate-bounce' : 'text-indigo-600'}`} />
-              <span>AI Concierge</span>
+              Shop
             </button>
-
-            <button
-              onClick={() => onNavigate('ai-writer')}
-              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
-                currentView === 'ai-writer'
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                  : 'text-neutral-600 hover:text-indigo-600 hover:bg-neutral-50'
-              }`}
-            >
-              <Sparkles className="w-4 h-4 text-indigo-600 animate-pulse" />
-              <span>AI Writer</span>
-            </button>
-
             <button
               onClick={() => onNavigate('wishlist')}
               className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 currentView === 'wishlist'
-                  ? 'bg-neutral-100 text-neutral-900'
-                  : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
+                  ? 'bg-[#F5EFE3] text-[#171310]'
+                  : 'text-neutral-600 hover:text-[#171310] hover:bg-neutral-50'
               }`}
             >
-              <Heart className="w-4 h-4" />
               <span>Wishlist</span>
               {wishlistCount > 0 && (
                 <span className="ml-1 text-xs font-bold px-1.5 py-0.2 rounded-full bg-rose-500 text-white">
@@ -98,21 +84,29 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center space-x-3">
-            
+          <div className="flex items-center space-x-2">
+
+            <button
+              onClick={goToCatalogSearch}
+              className="p-2.5 rounded-xl text-neutral-700 hover:bg-neutral-100 transition-colors"
+              title="Search"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
             {/* Cart Icon Button */}
             <button
               onClick={() => onNavigate('cart')}
               className={`relative p-2.5 rounded-xl transition-all ${
                 currentView === 'cart'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200'
+                  ? 'bg-[#171310] text-[#D4AF6A]'
                   : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
               }`}
               title="Shopping Cart"
             >
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs">
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#D4AF6A] text-[#171310] text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs">
                   {cartCount}
                 </span>
               )}
@@ -124,11 +118,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => onNavigate('profile')}
                 className={`flex items-center space-x-2 pl-2 pr-3 py-1.5 rounded-full border transition-all ${
                   currentView === 'profile'
-                    ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
+                    ? 'border-[#A6813C] bg-[#F5EFE3] text-[#171310]'
                     : 'border-neutral-200 bg-white hover:border-neutral-300 text-neutral-700'
                 }`}
               >
-                <div className="w-7 h-7 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs">
+                <div className="w-7 h-7 rounded-full bg-[#171310] text-[#D4AF6A] font-bold flex items-center justify-center text-xs">
                   {user.displayName.charAt(0).toUpperCase()}
                 </div>
                 <span className="text-sm font-medium max-w-[100px] truncate">
@@ -138,10 +132,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <button
                 onClick={onOpenAuth}
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors shadow-xs"
+                className="p-2.5 rounded-xl bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors"
+                title="Sign In"
               >
-                <LogIn className="w-4 h-4" />
-                <span>Sign In</span>
+                <User className="w-5 h-5" />
               </button>
             )}
 
@@ -149,25 +143,24 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         </div>
       </div>
-      
+
       {/* Mobile bottom nav bar */}
-      <div className="md:hidden flex border-t border-neutral-100 px-4 py-2 justify-around bg-white">
+      <div className="md:hidden flex border-t border-[#E7DFCF] px-4 py-2 justify-around bg-white">
         <button
           onClick={() => onNavigate('home')}
-          className={`text-xs font-medium py-1 px-3 rounded-lg ${currentView === 'home' ? 'text-indigo-600 bg-indigo-50' : 'text-neutral-600'}`}
+          className={`text-xs font-medium py-1 px-3 rounded-lg ${currentView === 'home' ? 'text-[#A6813C] bg-[#F5EFE3]' : 'text-neutral-600'}`}
         >
-          Catalog
+          Home
         </button>
         <button
-          onClick={() => onNavigate('ai-writer')}
-          className={`text-xs font-medium py-1 px-3 rounded-lg flex items-center space-x-1 ${currentView === 'ai-writer' ? 'text-indigo-600 bg-indigo-50' : 'text-neutral-600'}`}
+          onClick={goToCatalogSearch}
+          className="text-xs font-medium py-1 px-3 rounded-lg text-neutral-600"
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>AI Writer</span>
+          Shop
         </button>
         <button
           onClick={() => onNavigate('wishlist')}
-          className={`text-xs font-medium py-1 px-3 rounded-lg ${currentView === 'wishlist' ? 'text-indigo-600 bg-indigo-50' : 'text-neutral-600'}`}
+          className={`text-xs font-medium py-1 px-3 rounded-lg ${currentView === 'wishlist' ? 'text-[#A6813C] bg-[#F5EFE3]' : 'text-neutral-600'}`}
         >
           Wishlist ({wishlistCount})
         </button>

@@ -21,7 +21,7 @@ export async function seedProductsIfEmpty(): Promise<Product[]> {
     const snapshot = await getDocs(productsRef);
     
     if (snapshot.empty) {
-      console.log('Seeding initial Noor AI Store products to Firestore...');
+      console.log('Seeding initial Noor ul Haya products to Firestore...');
       for (const product of INITIAL_PRODUCTS) {
         await setDoc(doc(db, 'products', product.id), product);
       }

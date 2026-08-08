@@ -3,10 +3,14 @@ export interface Product {
   name: string;
   tagline: string;
   price: number;
-  category: 'Hardware' | 'Software' | 'Accessories' | 'AI Models';
+  cutPrice?: number;
+  category: 'Malaysian Hijab Set' | 'Khimar' | 'Instant Hijab' | 'Casual' | 'Niqab' | 'Accessories';
   rating: number;
   reviewsCount: number;
   image: string;
+  images?: string[];
+  colors?: string[];
+  sizeLabel?: string;
   description: string;
   features: string[];
   inStock: boolean;
@@ -15,6 +19,8 @@ export interface Product {
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedColor?: string;
+  selectedImage?: string;
 }
 
 export interface ProductReview {
@@ -45,12 +51,12 @@ export interface AIConversationMessage {
   recommendedProductIds?: string[];
 }
 
-export type ViewState = 
-  | 'home' 
-  | 'product-detail' 
-  | 'cart' 
-  | 'checkout' 
-  | 'ai-writer' 
+export type ViewState =
+  | 'home'
+  | 'product-detail'
+  | 'cart'
+  | 'checkout'
+  | 'ai-writer'
   | 'ai-concierge'
-  | 'wishlist' 
+  | 'wishlist'
   | 'profile';
